@@ -1,10 +1,12 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 
 function App() {
   const [length, setlength] = useState(8)
   const[numAllow,setnumAllow] = useState(false)
   const[charAllow,setcharAllow] = useState(false)
   const[psw,setpsw]= useState("")
+
+  const pswRef= useRef(null)
 
 const pswGenerator = useCallback(()=> {
     let pass= ""
@@ -18,6 +20,12 @@ const pswGenerator = useCallback(()=> {
     setpsw(pass)
 }
   , [length,numAllow,charAllow,setpsw])
+
+   const copyPasswordToClipboard = useCallback(() => {
+    pswRef.current?.select();
+    pswRef.current?.setSelectionRange(0, 999);
+    window.navigator.clipboard.writeText(psw)
+  }, [psw])
 
   useEffect(()=> {
     pswGenerator()
@@ -34,9 +42,11 @@ const pswGenerator = useCallback(()=> {
           className='w-[23rem]  pl-3 bg-slate-50'
           placeholder='password'
           readOnly
+          ref={pswRef}
           />
           
-        <button className='bg-blue-600 text-white w-12 pl-2 '>
+        <button onClick={copyPasswordToClipboard} 
+        className='bg-blue-600 text-white w-12 pl-2 '>
           copy
         </button>
       </div>
